@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CRM обращений — демонстрационный прототип</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">АП</span>
+    <div>
+      <div class="brand-title">Обращения клиентов</div>
+      <div class="brand-sub">демонстрационный прототип · ООО «Акцент Плюс»</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="role">
+      <span>Роль</span>
+      <select id="role">
+        <option value="manager">Руководитель</option>
+        <option value="operator">Оператор приёма</option>
+        <option value="executor">Исполнитель</option>
+      </select>
+    </label>
+    <button id="reset" class="ghost" title="Вернуть демонстрационные данные">Сбросить данные</button>
+  </div>
+</header>
+
+<main>
+  <section class="stats" id="stats"></section>
+
+  <section class="toolbar">
+    <input id="search" type="search" placeholder="Поиск по номеру, клиенту или тексту">
+    <select id="fstatus">
+      <option value="">Все статусы</option>
+      <option value="Новое">Новое</option>
+      <option value="Назначено">Назначено</option>
+      <option value="В работе">В работе</option>
+      <option value="Закрыто">Закрыто</option>
+    </select>
+    <select id="fpriority">
+      <option value="">Все приоритеты</option>
+      <option value="Высокий">Высокий</option>
+      <option value="Обычный">Обычный</option>
+      <option value="Низкий">Низкий</option>
+    </select>
+    <select id="fassignee">
+      <option value="">Все исполнители</option>
+    </select>
+    <span class="counter" id="counter"></span>
+  </section>
+
+  <section class="table-wrap">
+    <table id="table">
+      <thead>
+      <tr>
+        <th class="num">№</th>
+        <th>Тема</th>
+        <th>Клиент</th>
+        <th>Тип</th>
+        <th>Приоритет</th>
+        <th>Статус</th>
+        <th>Исполнитель</th>
+        <th>Создано</th>
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p class="empty" id="empty" hidden>Ничего не найдено — измените фильтры.</p>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="m-title"></div>
+        <div class="modal-sub" id="m-sub"></div>
+      </div>
+      <button class="close" id="m-close" aria-label="Закрыть">×</button>
+    </div>
+
+    <div class="modal-grid">
+      <div><span class="label">Клиент</span><span id="m-client"></span></div>
+      <div><span class="label">Контакт</span><span id="m-contact"></span></div>
+      <div><span class="label">Тип</span><span id="m-type"></span></div>
+      <div><span class="label">Приоритет</span><span id="m-priority"></span></div>
+      <div><span class="label">Статус</span><span id="m-status"></span></div>
+      <div><span class="label">Исполнитель</span><span id="m-assignee"></span></div>
+      <div><span class="label">Срок</span><span id="m-due"></span></div>
+      <div><span class="label">Создано</span><span id="m-created"></span></div>
+    </div>
+
+    <p class="description" id="m-desc"></p>
+
+    <div class="actions" id="m-actions"></div>
+
+    <div class="history">
+      <div class="label">История</div>
+      <ul id="m-history"></ul>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  Данные вымышленные. Прототип работает в браузере: изменения сохраняются только
+  на этом устройстве и не передаются на сервер.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
