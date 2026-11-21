@@ -16,8 +16,8 @@
 
 1. Установить Docker и Docker Compose:
    `curl -fsSL https://get.docker.com | sh`
-2. Скопировать комплект на сервер: `scp accent-crm-stand.zip root@host:/opt/`
-   и распаковать в `/opt/crm`.
+2. Скопировать комплект на сервер: `scp -r stand root@host:/opt/crm`
+   (каталог целиком, как он есть в репозитории).
 3. Создать `.env` из `.env.example`, задать пароли базы и администратора,
    указать `SITE_URL=https://crm.example.ru`.
 4. Поднять систему: `docker compose up -d`. Первый запуск занимает 2–3 минуты.
