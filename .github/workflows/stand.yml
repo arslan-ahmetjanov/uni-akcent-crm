@@ -54,7 +54,7 @@ jobs:
       - name: Build package archive
         run: bash stand/pack.sh "$RUNNER_TEMP/accent-crm-stand.zip"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: accent-crm-stand
           path: ${{ runner.temp }}/accent-crm-stand.zip
