@@ -2,6 +2,9 @@
 .env
 backup/
 
+# собранный архив комплекта: собирается командой bash stand/pack.sh
+/accent-crm-stand.zip
+
 # системный и редакторский мусор
 .DS_Store
 Thumbs.db

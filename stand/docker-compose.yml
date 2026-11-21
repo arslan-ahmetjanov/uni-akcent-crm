@@ -1,0 +1,90 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: espocrm
+      MYSQL_USER: espocrm
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      # пароль берётся из окружения контейнера, а не подставляется в аргументы
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  espocrm:
+    image: espocrm/espocrm:latest
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ESPOCRM_DATABASE_PLATFORM: Mysql
+      ESPOCRM_DATABASE_HOST: mysql
+      ESPOCRM_DATABASE_NAME: espocrm
+      ESPOCRM_DATABASE_USER: espocrm
+      ESPOCRM_DATABASE_PASSWORD: ${DB_PASSWORD}
+      ESPOCRM_ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ESPOCRM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ESPOCRM_SITE_URL: ${SITE_URL}
+      ESPOCRM_CONFIG_USE_WEB_SOCKET: "false"
+      ESPOCRM_CONFIG_DEFAULT_LANGUAGE: ru_RU
+      ESPOCRM_CONFIG_DEFAULT_DATE_FORMAT: DD.MM.YYYY
+      ESPOCRM_CONFIG_DEFAULT_TIME_FORMAT: HH:mm
+      ESPOCRM_CONFIG_TIME_ZONE: Asia/Yekaterinburg
+      ESPOCRM_CONFIG_LANGUAGE_LIST: '["ru_RU", "en_US"]'
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8080}:80"
+    volumes:
+      - espocrm-data:/var/www/html/data
+      - espocrm-custom:/var/www/html/custom
+      - espocrm-client-custom:/var/www/html/client/custom
+
+  espocrm-daemon:
+    image: espocrm/espocrm:latest
+    restart: unless-stopped
+    depends_on:
+      - espocrm
+    environment:
+      ESPOCRM_DATABASE_PLATFORM: Mysql
+      ESPOCRM_DATABASE_HOST: mysql
+      ESPOCRM_DATABASE_NAME: espocrm
+      ESPOCRM_DATABASE_USER: espocrm
+      ESPOCRM_DATABASE_PASSWORD: ${DB_PASSWORD}
+      ESPOCRM_SITE_URL: ${SITE_URL}
+    volumes:
+      - espocrm-data:/var/www/html/data
+      - espocrm-custom:/var/www/html/custom
+      - espocrm-client-custom:/var/www/html/client/custom
+    entrypoint: ["sh", "-c", "sleep 30; while true; do su -s /bin/sh www-data -c 'php /var/www/html/daemon.php' || true; sleep 10; done"]
+
+  espocrm-cron:
+    image: espocrm/espocrm:latest
+    restart: unless-stopped
+    depends_on:
+      - espocrm
+    environment:
+      ESPOCRM_DATABASE_PLATFORM: Mysql
+      ESPOCRM_DATABASE_HOST: mysql
+      ESPOCRM_DATABASE_NAME: espocrm
+      ESPOCRM_DATABASE_USER: espocrm
+      ESPOCRM_DATABASE_PASSWORD: ${DB_PASSWORD}
+      ESPOCRM_SITE_URL: ${SITE_URL}
+    volumes:
+      - espocrm-data:/var/www/html/data
+      - espocrm-custom:/var/www/html/custom
+      - espocrm-client-custom:/var/www/html/client/custom
+    entrypoint: ["sh", "-c", "sleep 30; while true; do su -s /bin/sh www-data -c 'php /var/www/html/cron.php' || true; sleep 60; done"]
+
+volumes:
+  mysql-data:
+  espocrm-data:
+  espocrm-custom:
+  espocrm-client-custom:

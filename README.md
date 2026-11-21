@@ -28,11 +28,14 @@
 ## Развёртывание стенда
 
 ```bash
-unzip stand/accent-crm-stand.zip -d crm && cd crm
+scp -r stand root@host:/opt/crm   # или скопируйте каталог stand/ любым способом
+cd /opt/crm
 cp .env.example .env        # задать пароли и SITE_URL
 docker compose up -d        # 2–3 минуты
 bash deploy/restore.sh      # демонстрационные данные из дампа
 ```
+
+Архив для передачи собирается из того же каталога: `bash stand/pack.sh`.
 
 Требования: 2 vCPU, 2 ГБ памяти, Docker. Подробная инструкция — `deploy/README.md`
 внутри архива.

@@ -16,6 +16,9 @@ const CLIENTS = [
 
 const ASSIGNEES = ['Иванова А. П.', 'Сидоров М. О.', 'Козлова М. С.'];
 
+// Исполнитель, от чьего имени открыт прототип: под этой ролью видны только его обращения.
+const CURRENT_EXECUTOR = 'Сидоров М. О.';
+
 const TYPES = ['Заказ документа', 'Консультация', 'Техническая проблема', 'Обучение',
   'Коммерческий запрос'];
 
@@ -179,10 +182,7 @@ function visibleItems() {
     if (st && item.status !== st) return false;
     if (pr && item.priority !== pr) return false;
     if (as && item.assignee !== as) return false;
-    if (role === 'executor' && item.assignee !== as && as === '') {
-      // исполнитель видит только свои, если не выбран конкретный
-      return false;
-    }
+    if (role === 'executor' && item.assignee !== CURRENT_EXECUTOR) return false;
     if (q) {
       const hay = `${item.id} ${item.subject} ${item.client} ${item.description}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -256,8 +256,9 @@ function openCard(id) {
   $('m-desc').textContent = item.description;
 
   const role = currentRole();
+  const canChangeStatus = role !== 'executor' || item.assignee === CURRENT_EXECUTOR;
   const actions = [];
-  if (role !== 'executor' || true) {
+  if (canChangeStatus) {
     if (item.status !== 'Закрыто') {
       STATUSES.filter((s) => s !== item.status).forEach((s) => {
         actions.push(`<button data-status="${s}">Перевести в «${s}»</button>`);
@@ -306,6 +307,10 @@ $('fpriority').addEventListener('change', renderTable);
 $('fassignee').addEventListener('change', renderTable);
 $('role').addEventListener('change', () => {
   renderAssignees();
+  const isExecutor = currentRole() === 'executor';
+  // Под ролью исполнителя фильтр по исполнителю закреплён на текущем пользователе.
+  $('fassignee').value = isExecutor ? CURRENT_EXECUTOR : '';
+  $('fassignee').disabled = isExecutor;
   renderAll();
 });
 
