@@ -46,6 +46,11 @@ jobs:
       - name: Check python syntax
         run: python3 -m py_compile stand/seed_demo.py
 
+      - name: Lint python
+        run: |
+          python3 -m pip install --quiet ruff
+          ruff check --select E9,F63,F7,F82 stand/seed_demo.py
+
       - name: Build package archive
         run: bash stand/pack.sh "$RUNNER_TEMP/accent-crm-stand.zip"
 
