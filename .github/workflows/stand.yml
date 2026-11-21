@@ -1,0 +1,46 @@
+name: stand
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: validate stand package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unpack stand
+        run: |
+          mkdir -p /tmp/stand
+          unzip -q stand/accent-crm-stand.zip -d /tmp/stand
+
+      # Регрессионная проверка: в комплект не должны попадать артефакты
+      # установки с паролем базы и ключом шифрования, а в демо-дампе —
+      # таблицы сессий и журнала входов.
+      - name: No install secrets in package
+        run: |
+          if tar -tzf /tmp/stand/dump/espocrm-data.tar.gz | grep -E 'config-internal\.php|cache/'; then
+            echo "::error::в архив данных попали config-internal.php или cache/"
+            exit 1
+          fi
+          if zcat /tmp/stand/dump/espocrm-demo.sql.gz | grep -q '^INSERT INTO `auth_token`'; then
+            echo "::error::в демо-дампе есть сессии auth_token"
+            exit 1
+          fi
+          if zcat /tmp/stand/dump/espocrm-demo.sql.gz | grep -q '^INSERT INTO `auth_log_record`'; then
+            echo "::error::в демо-дампе есть журнал входов"
+            exit 1
+          fi
+
+      - name: Validate docker compose
+        run: |
+          cd /tmp/stand
+          cp .env.example .env
+          docker compose config -q
+
+      - name: Check python syntax
+        run: python3 -m py_compile /tmp/stand/seed_demo.py
