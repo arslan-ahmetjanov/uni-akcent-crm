@@ -1,0 +1,13 @@
+# локальная конфигурация и состояние стенда
+.env
+backup/
+
+# системный и редакторский мусор
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
