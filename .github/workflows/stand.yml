@@ -11,7 +11,7 @@ jobs:
     name: validate stand
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Регрессионная проверка: в комплект не должны попадать артефакты
       # установки с паролем базы и ключом шифрования, а в демо-дампе —
